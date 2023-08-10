@@ -6,8 +6,8 @@ export const NavBar = () => {
       <Image
         src="/logo.png"
         alt="logo"
-        width={200}
-        height={200}
+        width={250}
+        height={64}
         className="mr-[6rem]"
       />
 
