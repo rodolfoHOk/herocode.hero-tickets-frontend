@@ -1,12 +1,16 @@
-import { BannerPrimary } from "@/app/components/BannerPrimary";
-import { BannerSecondary } from "@/app/components/BannerSecondary";
-import { categories } from "@/app/utils/categories";
-import Image from "next/image";
+import { BannerPrimary } from '@/app/components/BannerPrimary';
+import { BannerSecondary } from '@/app/components/BannerSecondary';
+import { categories } from '@/app/utils/categories';
+import { fetchWrapper } from '@/app/utils/fetchWrapper';
+import Image from 'next/image';
 
-export default function Dashboard() {
+export default async function Dashboard() {
+  const data = await fetchWrapper('/events/main', {});
+  const secondaryData = data.slice(1);
+
   return (
     <div className="container mx-auto">
-      <BannerPrimary />
+      <BannerPrimary event={data[0]} />
 
       <div className="p-2 text-blue">
         <p className="text-2xl font-medium">Eventos em destaque</p>
@@ -16,11 +20,9 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-3 gap-4 mb-4">
-        <BannerSecondary />
-
-        <BannerSecondary />
-
-        <BannerSecondary />
+        {secondaryData.map((event: any) => (
+          <BannerSecondary key={event._id} event={event} />
+        ))}
       </div>
 
       <div className="p-2 text-blue">

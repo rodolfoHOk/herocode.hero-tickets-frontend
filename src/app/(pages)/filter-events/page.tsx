@@ -1,10 +1,36 @@
-import { CardFilter } from "@/app/components/CardFilter";
-import { Button } from "@/app/components/Form/Button";
-import { Input } from "@/app/components/Form/Input";
-import { InputRange } from "@/app/components/Form/InputRange";
-import { categories } from "@/app/utils/categories";
+'use client';
+
+import { CardFilter } from '@/app/components/CardFilter';
+import { Button } from '@/app/components/Form/Button';
+import { Input } from '@/app/components/Form/Input';
+import { InputRange } from '@/app/components/Form/InputRange';
+import { categories } from '@/app/utils/categories';
+import { fetchWrapper } from '@/app/utils/fetchWrapper';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function FilterEvent() {
+  const searchParams = useSearchParams();
+
+  const [events, setEvents] = useState<any[]>([]);
+
+  const getEvents = async (data: any) => {
+    const response = await fetchWrapper(
+      `/events/filter?${new URLSearchParams({
+        name: data.name,
+      })}`,
+      { method: 'GET' }
+    );
+
+    setEvents(response);
+  };
+
+  useEffect(() => {
+    if (searchParams.get('q')) {
+      getEvents({ name: searchParams.get('q') });
+    }
+  }, [searchParams.get('q')]);
+
   return (
     <div className="container m-auto">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-8">
@@ -74,11 +100,9 @@ export default function FilterEvent() {
             </p>
           </div>
 
-          <CardFilter />
-
-          <CardFilter />
-
-          <CardFilter />
+          {events.map((event) => (
+            <CardFilter key={event._id} event={event} />
+          ))}
         </div>
       </div>
     </div>

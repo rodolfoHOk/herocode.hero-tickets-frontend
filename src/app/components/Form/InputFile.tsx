@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useState } from 'react';
 
 export const InputFile = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string>("");
+  const [preview, setPreview] = useState<string>('');
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const image = event.target.files ? event.target.files[0] : null;

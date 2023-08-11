@@ -1,9 +1,25 @@
-export const BannerSecondary = () => {
+import { BASE_URL } from '../utils/fetchWrapper';
+
+export const BannerSecondary = ({ event }: any) => {
+  const date = new Date(event.date);
+
+  const bannerImage = `${BASE_URL}/uploads/${event.banner}`;
+
+  const address = event.formattedAddress.split('-');
+
   return (
     <div className="rounded">
-      <div className="relative p-3 flex w-full h-[150px] bg-black/25 rounded-3xl shadow">
+      <div
+        className="relative p-3 flex w-full h-[150px] rounded-3xl shadow"
+        style={{
+          backgroundImage: `url(${bannerImage})`,
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      >
         <div className="text-white absolute top-3">
-          <p className="text-2xl pb-1 font-bold">Jorge e Mateus</p>
+          <p className="text-2xl pb-1 font-bold">{event.title}</p>
 
           <div className="flex">
             <div className="mr-4 flex gap-1">
@@ -21,7 +37,9 @@ export const BannerSecondary = () => {
                   d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
                 />
               </svg>
-              <span>08/07/2023</span>
+              <span>
+                {date.getDate()}/{date.getMonth() + 1}/{date.getFullYear()}
+              </span>
             </div>
 
             <div className="mr-4 flex gap-1">
@@ -39,7 +57,9 @@ export const BannerSecondary = () => {
                   d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
                 />
               </svg>
-              <span>14h</span>
+              <span>
+                {date.getHours()}h{date.getMinutes()}m
+              </span>
             </div>
           </div>
         </div>
@@ -65,7 +85,7 @@ export const BannerSecondary = () => {
                 d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
               />
             </svg>
-            <span>Mineirão - Belo Horizonte</span>
+            <span>{address[1]}</span>
           </div>
         </div>
       </div>

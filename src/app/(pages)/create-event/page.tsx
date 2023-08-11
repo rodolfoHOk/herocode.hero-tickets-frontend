@@ -1,6 +1,6 @@
-import { Input } from "@/app/components/Form/Input";
-import { InputFile } from "@/app/components/Form/InputFile";
-import { categories } from "@/app/utils/categories";
+import { Input } from '@/app/components/Form/Input';
+import { InputFile } from '@/app/components/Form/InputFile';
+import { categories } from '@/app/utils/categories';
 
 export default function CreateEvent() {
   return (

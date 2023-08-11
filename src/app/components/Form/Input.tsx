@@ -1,4 +1,4 @@
-import { ForwardRefRenderFunction, forwardRef } from "react";
+import { ForwardRefRenderFunction, forwardRef } from 'react';
 
 interface IInput {
   type: string;
@@ -11,7 +11,7 @@ const InputBase: ForwardRefRenderFunction<
   HTMLInputElement & HTMLTextAreaElement,
   IInput
 > = ({ placeholder, type, title, className, ...rest }, ref) => {
-  if (type === "textarea") {
+  if (type === 'textarea') {
     return (
       <div className={`mb-4 text-blue ${className}`}>
         <label className="flex flex-col gap-1">

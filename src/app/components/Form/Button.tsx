@@ -1,5 +1,3 @@
-import { title } from "process";
-
 interface IButtonProps {
   title: string;
   className?: string;
