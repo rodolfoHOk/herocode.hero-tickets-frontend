@@ -1,6 +1,11 @@
-import { ForwardRefRenderFunction, forwardRef } from 'react';
+import {
+  ForwardRefRenderFunction,
+  InputHTMLAttributes,
+  forwardRef,
+} from 'react';
 
-interface IInput {
+interface IInput
+  extends InputHTMLAttributes<HTMLInputElement & HTMLTextAreaElement> {
   type: string;
   title: string;
   placeholder: string;
