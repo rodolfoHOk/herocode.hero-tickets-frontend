@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { BASE_URL } from '../utils/fetchWrapper';
 import { Button } from './Form/Button';
 
@@ -95,7 +96,9 @@ export const CardFilter = ({ event }: any) => {
         <p className="text-sm text-black">{event.description}</p>
 
         <div className="flex justify-center w-2/5 mx-auto my-4">
-          <Button title="Ver Detalhes do Evento" />
+          <Link href={`/event-details/${event._id}`}>
+            <Button title="Ver Detalhes do Evento" />
+          </Link>
         </div>
       </div>
     </div>

@@ -1,7 +1,14 @@
 'use client';
 
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import {
+  GoogleMap,
+  InfoWindow,
+  Marker,
+  useJsApiLoader,
+} from '@react-google-maps/api';
 import { useEffect, useState } from 'react';
+import { fetchWrapper } from '../utils/fetchWrapper';
+import { CardFilter } from './CardFilter';
 
 const containerStyle = {
   width: '100%',
@@ -11,17 +18,21 @@ const containerStyle = {
 
 export const MapContainer = () => {
   const [center, setCenter] = useState({ lat: 19.89, lng: -43.93 });
-
-  const markers = [
-    { lat: -19.899613, lng: -43.9314789 },
-    { lat: -19.89565, lng: -43.9364789 },
-    { lat: -19.82919, lng: -43.987981 },
-    { lat: -19.968614, lng: -43.405302 },
-  ];
+  const [markers, setMarkers] = useState<any>([]);
+  const [selectedMarker, setSelectedMarker] = useState<any>();
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? '',
   });
+
+  const getEventsByLocation = async (latitude: number, longitude: number) => {
+    const response = await fetchWrapper(
+      `/events?latitude=${latitude}&longitude=${longitude}`,
+      {}
+    );
+
+    setMarkers(response);
+  };
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -33,9 +44,11 @@ export const MapContainer = () => {
             lat: latitude,
             lng: longitude,
           });
+
+          getEventsByLocation(latitude, longitude);
         },
         (error) => {
-          console.log('Erro ao buscar localização');
+          console.log('Erro ao buscar localização', error);
         }
       );
     }
@@ -43,8 +56,29 @@ export const MapContainer = () => {
 
   return isLoaded ? (
     <GoogleMap mapContainerStyle={containerStyle} center={center} zoom={10}>
-      {markers.map((mark, index) => (
-        <Marker key={index} position={{ lat: mark.lat, lng: mark.lng }} />
+      {markers.map((mark: any, index: number) => (
+        <>
+          <Marker
+            key={index}
+            position={{
+              lat: Number(mark.location.latitude),
+              lng: Number(mark.location.longitude),
+            }}
+            onClick={() => setSelectedMarker(mark)}
+          />
+
+          {selectedMarker && (
+            <InfoWindow
+              position={{
+                lat: Number(selectedMarker.location.latitude),
+                lng: Number(selectedMarker.location.longitude),
+              }}
+              onCloseClick={() => setSelectedMarker(null)}
+            >
+              <CardFilter event={selectedMarker} />
+            </InfoWindow>
+          )}
+        </>
       ))}
     </GoogleMap>
   ) : (

@@ -9,11 +9,24 @@ import { categories } from '@/app/utils/categories';
 import { fetchWrapper } from '@/app/utils/fetchWrapper';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+
+interface IFormFilter {
+  name: string;
+  category: string;
+  price: string;
+  date: string;
+  time: string;
+  latitude: string;
+  longitude: string;
+  radius: string;
+}
 
 export default function FilterEvent() {
   const searchParams = useSearchParams();
 
   const [events, setEvents] = useState<any[]>([]);
+  const { register, handleSubmit, setValue } = useForm<IFormFilter>();
 
   const getEvents = async (data: any) => {
     const response = await fetchWrapper(
@@ -24,6 +37,35 @@ export default function FilterEvent() {
     );
 
     setEvents(response);
+  };
+
+  const onSubmit = async (data: IFormFilter) => {
+    let formattedDate: string = '';
+    if (data.date && data.time) {
+      formattedDate = new Date(`${data.date}T${data.time}`).toISOString();
+    } else if (data.date && !data.time) {
+      formattedDate = new Date(data.date).toISOString();
+    }
+
+    const response = await fetchWrapper(
+      `/events/filter?${new URLSearchParams({
+        name: data.name,
+        category: data.category,
+        price: data.price,
+        date: formattedDate,
+        radius: data.radius,
+        latitude: data.latitude ? data.latitude : '',
+        longitude: data.longitude ? data.longitude : '',
+      })}`,
+      { method: 'GET' }
+    );
+
+    setEvents(response);
+  };
+
+  const onSelectLocation = (location: any) => {
+    setValue('latitude', location.lat);
+    setValue('longitude', location.lng);
   };
 
   useEffect(() => {
@@ -43,48 +85,64 @@ export default function FilterEvent() {
             </p>
           </div>
 
-          <Input
-            type="text"
-            placeholder="Insira o nome do seu evento"
-            title="Nome"
-          />
-
-          <InputAutocomplete />
-
-          <div className="grid grid-cols-2 gap-4">
-            <Input type="date" placeholder="dd/mm/aa" title="Data" />
-
-            <Input type="number" placeholder="hh:mm" title="Horário" />
-          </div>
-
-          <div className="text-blue mb-4">
-            <label>Categoria</label>
-            <select className="w-full px-6 py-[5px] font-medium bg-white rounded-lg border border-teal-400">
-              <option value="">Selecione</option>
-              {categories.map((category) => (
-                <option
-                  key={category.name}
-                  value={category.name}
-                  className="font-medium"
-                >
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <InputRange title="Distância" />
-
-          <InputRange title="Valor" />
-
-          <div className="grid grid-cols-2 gap-7 w-2/3 m-auto">
-            <Button
-              title="Limpar"
-              className="bg-white border border-blue text-blue"
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Input
+              type="text"
+              placeholder="Insira o nome do seu evento"
+              title="Nome"
+              {...register('name')}
             />
 
-            <Button title="Buscar" />
-          </div>
+            <InputAutocomplete onSelectLocation={onSelectLocation} />
+
+            <div className="grid grid-cols-2 gap-4">
+              <Input
+                type="date"
+                placeholder="dd/mm/aa"
+                title="Data"
+                {...register('date')}
+              />
+
+              <Input
+                type="time"
+                placeholder="hh:mm"
+                title="Horário"
+                {...register('time')}
+              />
+            </div>
+
+            <div className="text-blue mb-4">
+              <label>Categoria</label>
+              <select
+                className="w-full px-6 py-[5px] font-medium bg-white rounded-lg border border-teal-400"
+                {...register('category')}
+              >
+                <option value="">Selecione</option>
+                {categories.map((category) => (
+                  <option
+                    key={category.name}
+                    value={category.name}
+                    className="font-medium"
+                  >
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <InputRange title="Distância" {...register('radius')} />
+
+            <InputRange title="Valor" {...register('price')} />
+
+            <div className="grid grid-cols-2 gap-7 w-2/3 m-auto">
+              <Button
+                title="Limpar"
+                className="bg-white border border-blue text-blue"
+              />
+
+              <Button title="Buscar" />
+            </div>
+          </form>
         </div>
 
         <div className="mb-6 pl-6 flex flex-col gap-6">

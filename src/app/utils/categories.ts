@@ -34,4 +34,9 @@ export const categories = [
     image: '/musical.png',
     route: 'musical',
   },
+  {
+    name: 'Show',
+    image: '/musical.png',
+    route: 'show',
+  },
 ];

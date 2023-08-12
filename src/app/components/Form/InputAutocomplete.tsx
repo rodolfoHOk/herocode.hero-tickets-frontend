@@ -3,7 +3,13 @@
 import { ChangeEvent, useState } from 'react';
 import { Input } from './Input';
 
-export const InputAutocomplete = () => {
+interface IIAutocompleteProps {
+  onSelectLocation: (location: any) => void;
+}
+
+export const InputAutocomplete = ({
+  onSelectLocation,
+}: IIAutocompleteProps) => {
   const [suggestions, setSuggestions] = useState<any[]>([]);
   const [inputValue, setInputValue] = useState('');
 
@@ -16,9 +22,23 @@ export const InputAutocomplete = () => {
     setSuggestions(data.predictions);
   };
 
-  const handleSelectSuggestion = (suggestion: string) => {
-    setInputValue(suggestion);
+  const handleSelectSuggestion = async (suggestion: any) => {
+    setInputValue(suggestion.description);
     setSuggestions([]);
+
+    try {
+      const response = await fetch(
+        `/api/maps?place_id=${suggestion.place_id}`,
+        {}
+      );
+      const data = await response.json();
+
+      if (data.result.geometry.location) {
+        onSelectLocation(data.result.geometry.location);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -34,7 +54,7 @@ export const InputAutocomplete = () => {
         {suggestions.map((suggestion) => (
           <li
             className="p-2 cursor-pointer hover:bg-gray-100"
-            onClick={() => handleSelectSuggestion(suggestion.description)}
+            onClick={() => handleSelectSuggestion(suggestion)}
           >
             {suggestion.description}
           </li>
